@@ -119,7 +119,7 @@ def main():
     # take care of arguments
     info = 'aaaa'
     parser = argparse.ArgumentParser(prog='todo')
-    parser.add_argument('--version', action='version', version='%(prog)s'+VERSION)
+    parser.add_argument('--version', action='version', version='%(prog)s '+VERSION)
     days_group = parser.add_mutually_exclusive_group()
     days_group.add_argument('-d','--days', action='store', dest='days', default=config.days, metavar='N',
             help='show N days of tasks')
