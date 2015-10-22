@@ -142,6 +142,8 @@ def main():
             help='show tasks in full view')
     view_group.add_argument('--minimal-view', action='store_true', dest='one_line', default=config.minimal_view,
             help='show tasks in minimal view')
+    view_group.add_argument('--date-mode', action='store_false', dest='delta_mode', default=config.delta_mode,
+            help='show dates as absolute dates')
     view_group.add_argument('--delta-mode', action='store_true', dest='delta_mode', default=config.delta_mode,
             help='show dates as days until')
     parser.add_argument('-f','--file', default=config.todo_file, dest='todo_file', metavar='FILE',
