@@ -3,20 +3,22 @@ import os
 # Defaults are shown between description and configuration line
 # See todo --help and README.md for more details
 
-# Example task format:
-#    ✔ @due(10-31) get holloween costume @spooky
-#    ☐ @due(12-25) get christmas gift @hohoho
-
-# Prefix for tasks
-upcoming = '☐'
-completed = '✔'
-
 # The .todo file to open (~/tasks.todo)
 # (-f --file) [Default: os.path.join(os.environ['HOME'], 'tasks.todo')]
 todo_file = os.path.join(os.environ['HOME'], 'tasks.todo')
 
+# Example task format:
+#   [prefix] [tagsymbol][type]([date]) [task] [optional tags]
+#    ✔ #due(10-31) get holloween costume #spooky
+#    ☐ #due(12-25) get christmas gift #hohoho
+
+# Prefix for tasks
+format_upcoming = '☐'
+format_completed = '✔'
+format_tagsymbol = '#'
+
 # Number of days to due date until todo considers an unfinished task urgent
-# [Default = Assignment:1, Quiz:2, Exam:3]
+# [Default = Assignment:2, Quiz:3, Exam:5]
 assignment_urgency = 2
 quiz_urgency = 3
 exam_urgency = 5

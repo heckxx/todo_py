@@ -19,9 +19,9 @@ class Task:
         self.task = task
         self.tags = []
     def set_status(self,done):
-        if done == config.completed:
+        if done == config.format_completed:
             self.done = True
-        elif done == config.upcoming:
+        elif done == config.format_upcoming:
             self.done = False
         else:
             raise ValueError
@@ -75,7 +75,10 @@ class Task:
                     or self.itype == Task.Type.Quiz and self.date < today + datetime.timedelta(days=config.quiz_urgency) \
                     or self.itype == Task.Type.Exam and self.date < today + datetime.timedelta(days=config.exam_urgency) \
                     :
-                        info += colored(d,'red',attrs=['bold'])
+                        if self.date <= today:
+                            info += colored(d,'red',attrs=['reverse','bold'])
+                        else:
+                            info += colored(d,'red',attrs=['bold'])
             else: info += colored(d,'magenta')
             info += ' - ' + self.task
             if verbosity >= 3 and self.tags: info += colored('\n'+'Tags: '.rjust(12),'blue') + colored(str(self.tags),'cyan')
@@ -102,7 +105,10 @@ class Task:
                     or self.itype == Task.Type.Quiz and self.date < today + datetime.timedelta(days=config.quiz_urgency) \
                     or self.itype == Task.Type.Exam and self.date < today + datetime.timedelta(days=config.exam_urgency) \
                 :
-                        info += colored(d,'red',attrs=['bold'])
+                        if self.date <= today:
+                            info += colored(d,'red',attrs=['reverse','bold'])
+                        else:
+                            info += colored(d,'red',attrs=['bold'])
             else: info += colored(d,'magenta')
             info += colored(') ','magenta') + self.task
             if self.done:
@@ -192,7 +198,7 @@ def main():
             if not prompt: log(colored(line,attrs=['bold']),2,end='')
             category = line[:r.start()]
             continue
-        r = re.search('(?P<status>[%(u)r%(c)r]) (\@(?P<type>due|exam|quiz)\((?P<month>([0-9]){1,2})-(?P<date>([0-9]){1,2})\) )?(?P<task>[\w,-./\+\(\) ]+)' % {'u':config.upcoming,'c':config.completed},line)
+        r = re.search('(?P<status>[%(u)r%(c)r]) ([%(t)r](?P<type>due|exam|quiz)\((?P<month>([0-9]){1,2})-(?P<date>([0-9]){1,2})\) )?(?P<task>[\w,-./\+\(\) ]+)' % {'u':config.format_upcoming,'c':config.format_completed,'t':config.format_tagsymbol},line)
         if r:
             log(r.group('status')+'Task found: ' + r.group('task'),3)
             i = Task(r.group('task'))
@@ -203,7 +209,7 @@ def main():
                 i.set_date(datetime.date(2015,int(r.group('month')),int(r.group('date'))))
             else:
                 i.set_date(None)
-            r = re.finditer('( @(?P<tag>[\w]+))*$',line)
+            r = re.finditer('( %(t)r(?P<tag>[\w]+))*$'%{'t':config.format_tagsymbol},line)
             for t in r:
                 i.append_tag(t.group(0).replace('@','').split())
             tasks.append(i)
