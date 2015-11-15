@@ -5,7 +5,7 @@ from termcolor import colored
 import re, datetime, argparse, colorama
 import config
 
-VERSION = '0.1'
+VERSION = '0.101'
 ## Program starts here
 
 class Task:
@@ -123,7 +123,6 @@ def main():
         if loglevel <= verbosity:
             print(string,end=end)
     # take care of arguments
-    info = 'aaaa'
     parser = argparse.ArgumentParser(prog='todo')
     parser.add_argument('--version', action='version', version='%(prog)s '+VERSION)
     days_group = parser.add_mutually_exclusive_group()
@@ -148,9 +147,10 @@ def main():
             help='show tasks in full view')
     view_group.add_argument('--minimal-view', action='store_true', dest='one_line', default=config.minimal_view,
             help='show tasks in minimal view')
-    view_group.add_argument('--date-mode', action='store_false', dest='delta_mode', default=config.delta_mode,
+    date_group = parser.add_mutually_exclusive_group()
+    date_group.add_argument('--date-mode', action='store_false', dest='delta_mode', default=config.delta_mode,
             help='show dates as absolute dates')
-    view_group.add_argument('--delta-mode', action='store_true', dest='delta_mode', default=config.delta_mode,
+    date_group.add_argument('--delta-mode', action='store_true', dest='delta_mode', default=config.delta_mode,
             help='show dates as days until')
     parser.add_argument('-f','--file', default=config.todo_file, dest='todo_file', metavar='FILE',
             help='file to parse')
@@ -224,8 +224,9 @@ def main():
         count = 0
         for t in tasks:
             if t.date and t.date < (today+datetime.timedelta(days=prompt_days)):
-                due.append(t)
-                log('Found task due ' + str(t.date) + ': ' + t.task)
+                if not t.done or show_completed:
+                    due.append(t)
+                    log('Found task due ' + str(t.date) + ': ' + t.task)
         print('['+str(len(due))+']')
         return
     # Normal mode
