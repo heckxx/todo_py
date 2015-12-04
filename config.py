@@ -17,6 +17,11 @@ format_upcoming = '☐'
 format_completed = '✔'
 format_tagsymbol = '#'
 
+# Number of days an unfinished task will be in the past for todo
+# to consider it to be due next year
+# [Default = 180]
+days_max = 180
+
 # Number of days to due date until todo considers an unfinished task urgent
 # [Default = Assignment:2, Quiz:3, Exam:5]
 assignment_urgency = 2

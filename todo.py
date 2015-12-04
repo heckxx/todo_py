@@ -5,7 +5,7 @@ from termcolor import colored
 import re, datetime, argparse, colorama
 import config
 
-VERSION = '0.101'
+VERSION = '0.102'
 ## Program starts here
 
 class Task:
@@ -34,6 +34,8 @@ class Task:
     def set_date(self,date):
         if date:
             self.date = date
+            if (datetime.date.today()-self.date).days > config.days_max:
+                self.date = self.date.replace(year=(datetime.date.today().year+1))
         else: self.date = None
     def set_category(self,cat):
         if cat:
