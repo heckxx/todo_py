@@ -208,7 +208,7 @@ def main():
             i.set_status(r.group('status'))
             i.set_type(r.group('type'))
             if r.group('date'):
-                i.set_date(datetime.date(2015,int(r.group('month')),int(r.group('date'))))
+                i.set_date(datetime.date(today.year,int(r.group('month')),int(r.group('date'))))
             else:
                 i.set_date(None)
             r = re.finditer('( %(t)r(?P<tag>[\w]+))*$'%{'t':config.format_tagsymbol},line)
