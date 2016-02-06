@@ -22,11 +22,13 @@ format_tagsymbol = '#'
 # [Default = 180]
 days_max = 180
 
-# Number of days to due date until todo considers an unfinished task urgent
-# [Default = Assignment:2, Quiz:3, Exam:5]
-assignment_urgency = 2
-quiz_urgency = 3
-exam_urgency = 5
+# Task types and days to due date until todo considers an unfinished task urgent
+# [Default = Assignment:2, Quiz:3, Exam:5, Project:5, Misc/Untyped:-1]
+task_type = {'assignment': 2,
+             'quiz': 3,
+             'exam': 5,
+             'project': 5,
+             'misc': -1}
 
 # Number of days of future unfinished tasks prompt will show
 # (-p --prompt) [Default: 1]

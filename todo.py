@@ -5,16 +5,10 @@ from termcolor import colored
 import re, datetime, argparse, colorama
 import config
 
-VERSION = '0.102'
+VERSION = '0.110'
 ## Program starts here
 
 class Task:
-    class Type(Enum):
-        Exam = 0
-        #Ongoing = 1
-        Assignment= 1
-        Quiz = 2
-        Misc = -1
     def __init__(self,task):
         self.task = task
         self.tags = []
@@ -26,11 +20,14 @@ class Task:
         else:
             raise ValueError
     def set_type(self,itype):
-        if itype == 'due': self.itype = Task.Type.Assignment
-        elif itype == 'ongoing': self.itype = Task.Type.Ongoing
-        elif itype == 'exam': self.itype = Task.Type.Exam
-        elif itype == 'quiz': self.itype = Task.Type.Quiz
-        else: self.itype = Task.Type.Misc
+        for x in config.task_type:
+            if itype == 'due':
+                self.itype = 'assignment'
+                return
+            elif itype == x:
+                self.itype = x
+                return
+        self.itype = 'misc'
     def set_date(self,date):
         if date:
             self.date = date
@@ -42,11 +39,11 @@ class Task:
             self.category = cat.lstrip()
         else: self.category = 'Uncategorized'
     def append_tag(self,tag):
-        if tag and tag not in ('date','ongoing','exam','quiz'):
+        if tag and tag not in config.task_type:
             self.tags.append(tag)
     def __repr__(self):
         repr = ''
-        if self.itype: repr += 'type: '+self.itype.name
+        if self.itype: repr += 'type: '+self.itype
         repr += '\ntask: '+self.task
         if self.category: repr += '\ncategory: '+self.category
         if self.date: repr += '\ndate: '+self.date.ctime()
@@ -60,7 +57,7 @@ class Task:
                 info += colored('Category: ','white') + colored(self.category,'white',attrs=['bold'])
             else:
                 info += colored('X ','grey',attrs=['bold']) + colored('Category: '+self.category,'white',attrs=['dark'])
-            info += '\n'+colored(self.itype.name.ljust(10) + ': ','magenta')
+            info += '\n'+colored(self.itype.capitalize() + ': ','magenta')
             today = datetime.date.today()
             if delta_mode and self.date:
                 d = '%d' % (self.date - today).days
@@ -73,14 +70,12 @@ class Task:
             # Task is urgent
             if self.done:
                 info += colored(d,'magenta')
-            elif self.itype == Task.Type.Assignment and self.date < today + datetime.timedelta(days=config.assignment_urgency) \
-                    or self.itype == Task.Type.Quiz and self.date < today + datetime.timedelta(days=config.quiz_urgency) \
-                    or self.itype == Task.Type.Exam and self.date < today + datetime.timedelta(days=config.exam_urgency) \
-                    :
-                        if self.date <= today:
-                            info += colored(d,'red',attrs=['reverse','bold'])
-                        else:
-                            info += colored(d,'red',attrs=['bold'])
+            elif self.date < today + datetime.timedelta(days = config.task_type[self.itype])\
+                    and config.task_type[self.itype] != -1:
+                    if self.date <= today:
+                        info += colored(d,'red',attrs=['reverse','bold'])
+                    else:
+                        info += colored(d,'red',attrs=['bold'])
             else: info += colored(d,'magenta')
             info += ' - ' + self.task
             if verbosity >= 3 and self.tags: info += colored('\n'+'Tags: '.rjust(12),'blue') + colored(str(self.tags),'cyan')
@@ -90,7 +85,7 @@ class Task:
                 info += colored(self.category+": ",'white',attrs=['bold'])
             else:
                 info += colored(self.category+": ",'white',attrs=['dark'])
-            info += colored(self.itype.name + '(','magenta')
+            info += colored(self.itype.capitalize()+ '(','magenta')
             today = datetime.date.today()
             if delta_mode and self.date:
                 d = '%d' % (self.date - today).days
@@ -103,14 +98,12 @@ class Task:
             # Task is urgent
             if self.done:
                 info += colored(d,'magenta')
-            elif self.itype == Task.Type.Assignment and self.date < today + datetime.timedelta(days=config.assignment_urgency) \
-                    or self.itype == Task.Type.Quiz and self.date < today + datetime.timedelta(days=config.quiz_urgency) \
-                    or self.itype == Task.Type.Exam and self.date < today + datetime.timedelta(days=config.exam_urgency) \
-                :
-                        if self.date <= today:
-                            info += colored(d,'red',attrs=['reverse','bold'])
-                        else:
-                            info += colored(d,'red',attrs=['bold'])
+            elif self.date < today + datetime.timedelta(days = config.task_type[self.itype])\
+                    and config.task_type[self.itype] != -1:
+                    if self.date <= today:
+                        info += colored(d,'red',attrs=['reverse','bold'])
+                    else:
+                        info += colored(d,'red',attrs=['bold'])
             else: info += colored(d,'magenta')
             info += colored(') ','magenta') + self.task
             if self.done:
