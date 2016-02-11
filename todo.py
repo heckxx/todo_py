@@ -193,7 +193,7 @@ def main():
             if not prompt: log(colored(line,attrs=['bold']),2,end='')
             category = line[:r.start()]
             continue
-        r = re.search('(?P<status>[%(u)r%(c)r]) ([%(t)r](?P<type>due|exam|quiz)\((?P<month>([0-9]){1,2})-(?P<date>([0-9]){1,2})\) )?(?P<task>[\w,-./\+\(\) ]+)' % {'u':config.format_upcoming,'c':config.format_completed,'t':config.format_tagsymbol},line)
+        r = re.search('(?P<status>[%(u)r%(c)r]) ([%(t)r](?P<type>.*)\((?P<month>([0-9]){1,2})-(?P<date>([0-9]){1,2})\) )?(?P<task>[\w,-./\+\(\) ]+)' % {'u':config.format_upcoming,'c':config.format_completed,'t':config.format_tagsymbol},line)
         if r:
             log(r.group('status')+'Task found: ' + r.group('task'),3)
             i = Task(r.group('task'))
