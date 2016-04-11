@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 from enum import Enum
-from termcolor import colored
-import re, datetime, argparse, colorama
+import re, datetime, argparse
 import config
 
 VERSION = '0.110'
@@ -70,7 +69,7 @@ class Task:
             # Task is urgent
             if self.done:
                 info += colored(d,'magenta')
-            elif self.date < today + datetime.timedelta(days = config.task_type[self.itype])\
+            elif self.date and self.date < today + datetime.timedelta(days = config.task_type[self.itype])\
                     and config.task_type[self.itype] != -1:
                     if self.date <= today:
                         info += colored(d,'red',attrs=['reverse','bold'])
@@ -98,7 +97,7 @@ class Task:
             # Task is urgent
             if self.done:
                 info += colored(d,'magenta')
-            elif self.date < today + datetime.timedelta(days = config.task_type[self.itype])\
+            elif self.date and self.date < today + datetime.timedelta(days = config.task_type[self.itype])\
                     and config.task_type[self.itype] != -1:
                     if self.date <= today:
                         info += colored(d,'red',attrs=['reverse','bold'])
@@ -113,7 +112,6 @@ class Task:
 
 def main():
     global delta_mode
-    colorama.init()
     def log(string,loglevel=2,end='\n'):
         if loglevel <= verbosity:
             print(string,end=end)
@@ -176,6 +174,10 @@ def main():
 
     today = datetime.date.today()
     # program start
+    if not prompt:
+        import colorama
+        from termcolor import colored
+        colorama.init()
     tasks = []
     log('opening %r' % todo_file, 3)
     try:
@@ -193,7 +195,7 @@ def main():
             if not prompt: log(colored(line,attrs=['bold']),2,end='')
             category = line[:r.start()]
             continue
-        r = re.search('(?P<status>[%(u)r%(c)r]) ([%(t)r](?P<type>.*)\((?P<month>([0-9]){1,2})-(?P<date>([0-9]){1,2})\) )?(?P<task>[\w,-./\+\(\) ]+)' % {'u':config.format_upcoming,'c':config.format_completed,'t':config.format_tagsymbol},line)
+        r = re.search('(?P<status>[%(u)r%(c)r]) ([%(t)r](?P<type>.*)\((?P<month>([0-9]){1,2})-(?P<date>([0-9]){1,2})\) )?(?P<task>[\w,-./\+\(\)\? ]+)' % {'u':config.format_upcoming,'c':config.format_completed,'t':config.format_tagsymbol},line)
         if r:
             log(r.group('status')+'Task found: ' + r.group('task'),3)
             i = Task(r.group('task'))
